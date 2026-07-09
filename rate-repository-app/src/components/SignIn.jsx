@@ -1,5 +1,6 @@
 import { TextInput, Pressable, View, StyleSheet } from 'react-native';
 import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 import Text from './Text';
 import theme from '../theme';
@@ -25,6 +26,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: theme.colors.textPrimary,
   },
+  textInputError: {
+    borderColor: theme.colors.error,
+  },
 });
 
 const initialValues = {
@@ -32,9 +36,19 @@ const initialValues = {
   password: '',
 };
 
+const validationSchema = yup.object().shape({
+  username: yup
+    .string()
+    .required('Username is required'),
+  password: yup
+    .string()
+    .required('Password is required'),
+});
+
 const SignInForm = ({ onSubmit }) => {
   const formik = useFormik({
     initialValues,
+    validationSchema,
     onSubmit,
   });
 
@@ -44,15 +58,33 @@ const SignInForm = ({ onSubmit }) => {
         placeholder='Username'
         value={formik.values.username}
         onChangeText={formik.handleChange('username')}
-        style={styles.textInput}
+        onBlur={formik.handleBlur('username')}
+        style={[
+          styles.textInput,
+          formik.touched.username &&
+          formik.errors.username &&
+          styles.textInputError
+        ]}
       />
+      {formik.touched.username && formik.errors.username && (
+        <Text color='error'>{formik.errors.username}</Text>
+      )}
       <TextInput
         placeholder='Password'
         value={formik.values.password}
         onChangeText={formik.handleChange('password')}
+        onBlur={formik.handleBlur('password')}
         secureTextEntry={true}
-        style={styles.textInput}
+        style={[
+          styles.textInput,
+          formik.touched.password &&
+          formik.errors.password &&
+          styles.textInputError
+        ]}
       />
+      {formik.touched.password && formik.errors.password && (
+        <Text color='error'>{formik.errors.password}</Text>
+      )}
       <Pressable onPress={formik.handleSubmit} style={styles.submitButton}>
         <Text color='textTertiary' fontWeight='bold'>
           Sign In
@@ -71,13 +103,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
-// Implement a sign-in form to the SignIn component we added earlier in the SignIn.jsx file. The sign-in form should include two text fields, one for the username and one for the password. There should also be a button for submitting the form. You don't need to implement an onSubmit callback function, it is enough that the form values are logged using console.log when the form is submitted:
-
-// const onSubmit = (values) => {
-//   console.log(values);
-// };
-
-// You can use the secureTextEntry(opens in a new tab) prop in the TextInput component to obscure the password input.
-
-// The sign-in form should look something like this:
