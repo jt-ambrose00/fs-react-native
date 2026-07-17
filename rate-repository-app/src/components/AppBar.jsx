@@ -3,6 +3,8 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 
 import AppBarTab from './AppBarTab';
 import theme from '../theme';
+import useUser from '../hooks/useUser';
+import useSignOut from '../hooks/useSignOut';
 
 const styles = StyleSheet.create({
   container: {
@@ -16,10 +18,16 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
+  const { user } = useUser();
+  const signOut = useSignOut();
+
   return <View style={styles.container}>
     <ScrollView horizontal>
       <AppBarTab link='/' label='Repositories' />
-      <AppBarTab link='/signin' label='Sign In' />
+      {user ?
+        <AppBarTab link='/' label='Sign Out' onPress={signOut} /> :
+        <AppBarTab link='/signin' label='Sign In' />
+      }
     </ScrollView>
   </View>;
 };
